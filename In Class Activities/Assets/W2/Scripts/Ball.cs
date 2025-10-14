@@ -9,11 +9,11 @@ public class Ball : MonoBehaviour
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Rigidbody2D _rigidbody;
 
-    private int _bounces;
+    [SerializeField] private int _bounces;
 
     // ------------------------------------------------------------------------
     // This code runs whenever the ball hits something.
-    private void OnCollisionEnter2D(Collision2D collision)
+    [SerializeField] private void OnCollisionEnter2D(Collision2D collision)
     {
         // STEP 1 -------------------------------------------------------------
         // Uncomment ONE of the blow lines of code to ADD ONE
