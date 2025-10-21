@@ -12,3 +12,9 @@ Create future Devlog sub-headers with the three # symbols, then write your Devlo
 - Low-poly environment: https://assetstore.unity.com/packages/3d/environments/landscapes/low-poly-simple-nature-pack-162153 
 
 ### G1
+
+### W4
+
+Cat - Rigidbody- Capsule Collider 
+SoccerBall - Rigidbody- Sphere Collider 
+Goal - Box Collider£¨no Rigidbody 
