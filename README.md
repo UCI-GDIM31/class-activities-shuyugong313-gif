@@ -18,3 +18,6 @@ Create future Devlog sub-headers with the three # symbols, then write your Devlo
 Cat - Rigidbody- Capsule Collider 
 SoccerBall - Rigidbody- Sphere Collider 
 Goal - Box Collider£¨no Rigidbody 
+
+### W5
+My plan is to finish writing the code for the cat first, and then move on to the deer. In Deer, I found that sometimes the functions couldn't be called. Therefore, I made some adjustments.
