@@ -21,3 +21,6 @@ Goal - Box Collider£¨no Rigidbody
 
 ### W5
 My plan is to finish writing the code for the cat first, and then move on to the deer. In Deer, I found that sometimes the functions couldn't be called. Therefore, I made some adjustments.
+
+### W6
+Create the BatW6 class to implement the methods for chasing the player and stopping the chase. It includes the GridLayoutGroup component for UI display and manages the movement state and behavior logic of the bat.
