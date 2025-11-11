@@ -24,3 +24,8 @@ My plan is to finish writing the code for the cat first, and then move on to the
 
 ### W6
 Create the BatW6 class to implement the methods for chasing the player and stopping the chase. It includes the GridLayoutGroup component for UI display and manages the movement state and behavior logic of the bat.
+
+### W7
+https://docs.google.com/document/d/1yZqnc3GyaietJAPdXlV0iO8EaXxBU-2bWMjaaw1TMe4/edit?tab=t.0
+I am the Game Play writer
+Eroor: It makes the character always move "forward towards the world", no matter how you turn around, it just doesn't make sense.

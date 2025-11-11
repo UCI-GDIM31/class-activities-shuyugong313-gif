@@ -8,7 +8,6 @@ public class MuskratW7 : MonoBehaviour
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _rotationSpeed;
     [SerializeField] private float _jumpForce = 5.0f;
-
     private bool _orbitMode;
     private Transform _sphereTransform;
 
@@ -23,7 +22,6 @@ public class MuskratW7 : MonoBehaviour
         {
             MoveNormal();
         }
-
         Jump();
     }
 
@@ -31,42 +29,30 @@ public class MuskratW7 : MonoBehaviour
     private void MoveOrbitMode()
     {
         // STEP 3 -------------------------------------------------------------
-        // This movement code only runs when the Muskrat is on a bubble.
-        //
-        // Use leftright and _rotationSpeed to rotate the Muskrat again.
-        // But this time, you'll need to convert the muskrat's up vector to
-        //      WORLD SPACE.
-        // This is because the Muskrat's up vector changes direction as it
-        //      walks around a bubble, unlike when it's on a flat ground.
-        //
-        // You will need:
-        // Transform.TransformDirection() https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Transform.TransformDirection.html
-        // Transform.RotateAround () https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Transform.RotateAround.html
-        //
-        // You might want to look below Step 3 for an example :D
-        
         float leftright = Input.GetAxis("Horizontal");
-        
-
-
-        // STEP 3 -------------------------------------------------------------
-
         float forward = Input.GetAxis("Vertical");
-        Vector3 axis = transform.TransformDirection(Vector3.right);
+
+        // 前后移动：绕球体“横向”滚动（用本地 right 轴，转世界空间）
+        Vector3 rightAxis = transform.TransformDirection(Vector3.right);
         transform.RotateAround(
             _sphereTransform.position,
-            axis,
+            rightAxis,
             forward * _rotationSpeed * Time.deltaTime
         );
 
+        // 左右移动：绕球体“纵向”走圈（用本地 up 轴，转世界空间）
+        Vector3 upAxis = transform.TransformDirection(Vector3.up);
+        transform.RotateAround(
+            _sphereTransform.position,
+            upAxis,
+            -leftright * _rotationSpeed * Time.deltaTime  // 负号让左转为顺时针
+        );
+        // STEP 3 -------------------------------------------------------------
 
         // STEP 5 -------------------------------------------------------------
-        // Once again, set the "flying" and "running" parameters to animate 
-        //      the Muskrat.
-        // The Muskrat should never play the "flying" animation while on a
-        //      bubble.
-
-
+        bool isMoving = Mathf.Abs(forward) > 0.1f || Mathf.Abs(leftright) > 0.1f;
+        _animator.SetBool("flying", false);                    // 在泡泡上不飞
+        _animator.SetBool("running", isMoving);                // 有输入就跑
         // STEP 5 -------------------------------------------------------------
     }
 
@@ -74,41 +60,20 @@ public class MuskratW7 : MonoBehaviour
     private void MoveNormal()
     {
         // STEP 1 -------------------------------------------------------------
-        // This movement code only runs when the Muskrat is on flat ground.
-        //
-        // Use the input stored in leftright to rotate the Muskrat at
-        //      _rotationSpeed speed.
-        // Use the Transform.Rotate method: https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Transform.Rotate.html
-        // and don't forget about Time.deltaTime :D
-        //
-        // Hint: you'll need to multiply leftright by one of the static Vector3 values:
-        //      https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Vector3.html
-        //      like up, left, right, or forward.
-
         float leftright = Input.GetAxis("Horizontal");
-
+        transform.Rotate(Vector3.up, leftright * _rotationSpeed * Time.deltaTime);
         // STEP 1 -------------------------------------------------------------
-
 
         // STEP 2 -------------------------------------------------------------
         float movement = Input.GetAxis("Vertical");
-
-        // This line of code is incorrect. 
-        // Replace it with a different line of code that uses 'movement' to
-        //      move the Muskrat forwards and backwards.
-        transform.position += movement * Vector3.forward * _moveSpeed * Time.deltaTime;
-
+        transform.position += transform.forward * movement * _moveSpeed * Time.deltaTime;
         // STEP 2 -------------------------------------------------------------
 
-
         // STEP 4 -------------------------------------------------------------
-        // Change the "flying" and "running" parameters on the Animator based
-        //      on the Muskrat's movement to animate the Muskrat.
-        // Use _rigidbody.linearVelocity.
-        // You may also find the absolute value method, Mathf.Abs(), helpful:
-        //      https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Mathf.Abs.html
-
-        
+        float speed = _rigidbody.linearVelocity.magnitude;
+        bool isGrounded = Physics.Raycast(transform.position, Vector3.down, 0.1f); // 简单地面检测
+        _animator.SetBool("running", speed > 0.1f && isGrounded);
+        _animator.SetBool("flying", speed > 0.1f && !isGrounded);
         // STEP 4 -------------------------------------------------------------
     }
 
@@ -119,13 +84,11 @@ public class MuskratW7 : MonoBehaviour
         {
             _rigidbody.isKinematic = false;
             _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-
             if (_sphereTransform != null)
             {
                 Destroy(_sphereTransform.gameObject);
                 _sphereTransform = null;
             }
-
             _orbitMode = false;
         }
     }
@@ -137,13 +100,9 @@ public class MuskratW7 : MonoBehaviour
         {
             _orbitMode = true;
             _rigidbody.isKinematic = true;
-
             _sphereTransform = collision.transform;
-
             ContactPoint contact = collision.GetContact(0);
-
             Vector3 tangent = Vector3.Cross(Vector3.right, contact.normal);
-
             transform.SetPositionAndRotation(
                 contact.point,
                 Quaternion.LookRotation(tangent, contact.normal)
